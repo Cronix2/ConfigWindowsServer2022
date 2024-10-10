@@ -35,12 +35,20 @@ function Change_to_static_IP{
 
 function Download_and_install_IIS{
     param (
-        [string]$nameServer
     )
-    Installer-WindowsFeature -name Web-Server -IncludeManagementTools
+    Install-WindowsFeature -name Web-Server -IncludeManagementTools
     
 }
 
+function Download_and_install_DNS{
+    param (
+        [string]$new_ip_address
+    )
+    Install-WindowsFeature -name DNS -IncludeManagementTools
+    $DnsServerSettings = Get-DnsServerSetting -ALL
+    $DnsServerSettings.ListeningIpAddress = @($new_ip_address)
+    Set-DNSServerSetting $DnsServerSettings
+}
 
 # ____________________________________________________
 function _main_{
@@ -48,6 +56,8 @@ function _main_{
     [string]$nia = Read-Host "Entrez l'adresse IP que vous voulez donnez a votre machine"
     Rename_your_Server -newname $rs
     Change_to_static_IP -new_ip_address $nia
+    Download_and_install_IIS
+    Download_and_install_DNS -new_ip_address $nia
 }
 
 _main_

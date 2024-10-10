@@ -28,11 +28,18 @@ function Change_to_static_IP{
         #Write-Host "$new_default_gateway `n$new_ip_address"
         Remove-NetIPAddress -InterfaceIndex $index_interface -Confirm:$false
         Remove-NetRoute -InterfaceIndex $index_interface -Confirm:$false
-        New-NetIPAddress -InterfaceIndex $index_interface -IPAddress $new_ip_address -AdressFamily IPv4 -PrefixLength 24 -DefaultGateway $new_default_gateway
+        New-NetIPAddress -InterfaceIndex $index_interface -IPAddress $new_ip_address -PrefixLength 24 -DefaultGateway $new_default_gateway
         Set-DnsClientServerAddress -InterfaceIndex $index_interface -ServerAddresses ($new_ip_address,"8.8.8.8")
     }
 }
 
+function Download_and_install_IIS{
+    param (
+        [string]$nameServer
+    )
+    Installer-WindowsFeature -name Web-Server -IncludeManagementTools
+    
+}
 
 
 # ____________________________________________________

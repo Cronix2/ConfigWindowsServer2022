@@ -42,3 +42,5 @@ function _main_{
     Rename_your_Server -newname $rs
     Change_to_static_IP -new_ip_address $nia
 }
+
+_main_

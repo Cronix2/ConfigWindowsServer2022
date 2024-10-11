@@ -75,7 +75,7 @@ function Download_and_install_IIS{
     #> 
     New-Item -Path "C:\inetpub" -Name $name_site1 -ItemType Directory
     New-Item -Path "C:\inetpub\$name_site1" -Name "index.html" -ItemType "file" -Value ("Hello " + $name_site1)
-    New-IISSite -Name $name_site1 -BindingInformation ("$new_ip_address"+":80:$name_site1") -PhysicalPath "C:\inetpub\$name_site1"
+    New-IISSite -Name $name_site1 -BindingInformation ($new_ip_address+":80:"+$name_site1) -PhysicalPath ("C:\inetpub\"+$name_site1)
 }
 
 function Download_and_install_DNS{

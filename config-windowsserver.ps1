@@ -98,7 +98,7 @@ function Download_and_install_DNS{
 # ____________________________________________________
 function _main_{
     $admin = AsAdministrator
-    if ($admin -eq $true){
+    if ($admin -eq $false){
         Write-Host "Vous n'etes pas administrateur, veuillez relancer le script en tant qu'administrateur"
         exit
     }else{

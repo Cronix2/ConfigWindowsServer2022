@@ -92,6 +92,7 @@ function Download_and_install_DNS{
     Add-DnsServerResourceRecord -Name ($name_1+"."+$secondary_zone) -A -ZoneName $primary_zone -IPv4Address $new_ip_address
     Add-DnsServerResourceRecord -Name ($name_2+"."+$secondary_zone) -A -ZoneName $primary_zone -IPv4Address $new_ip_address
     Add-DnsServerResourceRecord -Name ($name_3+"."+$secondary_zone) -A -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Get-DnsServerDnsSecZoneSetting -ZoneName $primary_zone
 }
 
 

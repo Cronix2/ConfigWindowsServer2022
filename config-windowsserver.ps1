@@ -69,6 +69,7 @@ function Download_and_install_IIS{
         New-Item -Path "C:\inetpub\$name_site" -Name "index.html" -ItemType "file" -Value ("Hello " + $name_site)
         #New-IISSite -Name $name_site -BindingInformation "*:443:" -PhysicalPath "C:\inetpub\$name_site" -CertificateThumbPrint "D043B153FCEFD5011B9C28E186A60B9F13103363" -CertStoreLocation "Cert:\LocalMachine\Webhosting" -Protocol https
         New-IISSite -Name $name_site -BindingInformation ("$new_ip_address"+":80:$name_site") -PhysicalPath "C:\inetpub\$name_site"
+        New-IISSite -Name $name_site -BindingInformation ("$new_ip_address"+":80:$name_site") -PhysicalPath "$env:systemdrive\inetpub\$name_site"
     }    
 }
 
@@ -87,9 +88,9 @@ function Download_and_install_DNS{
     $DnsServerSettings.ListeningIpAddress = @($new_ip_address)
     Set-DNSServerSetting $DnsServerSettings
     Add-DnsServerPrimaryZone -Name $primary_zone -ZoneFile $zone_file
-    Add-DnsServerResourceRecordA -Name $name_1 -ZoneName $primary_zone -IPv4Address $new_ip_address
-    Add-DnsServerRessourceRecordA -Name $name_2 -ZoneName $primary_zone -IPv4Address $new_ip_address
-    Add-DnsServerRessourceRecordA -Name $name_3 -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Add-DnsServerResourceRecord -Name $name_1 -A -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Add-DnsServerResourceRecord -Name $name_2 -A -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Add-DnsServerResourceRecord -Name $name_3 -A -ZoneName $primary_zone -IPv4Address $new_ip_address
 }
 
 

@@ -69,7 +69,7 @@ function Download_and_install_IIS{
         New-Item -Path "C:\inetpub" -Name $name_site -ItemType Directory
         New-Item -Path "C:\inetpub\$name_site" -Name "index.html" -ItemType "file" -Value ("Hello " + $name_site)
         #New-IISSite -Name $name_site -BindingInformation "*:443:" -PhysicalPath "C:\inetpub\$name_site" -CertificateThumbPrint "D043B153FCEFD5011B9C28E186A60B9F13103363" -CertStoreLocation "Cert:\LocalMachine\Webhosting" -Protocol https
-        New-IISSite -Name $name_site -BindingInformation ("$new_ip_address"+":80:"+("$name_site"+"$zone_file")) -PhysicalPath "C:\inetpub\$name_site"
+        New-IISSite -Name $name_site -BindingInformation ("$new_ip_address"+":80:"+("$name_site"+"."+"$zone_file")) -PhysicalPath "C:\inetpub\$name_site"
         #New-IISSite -Name $name_site -BindingInformation ("$new_ip_address"+":80:$name_site") -PhysicalPath "$env:systemdrive\inetpub\$name_site"
     } 
 }

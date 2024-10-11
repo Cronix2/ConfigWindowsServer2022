@@ -62,8 +62,7 @@ function Download_and_install_IIS{
         [string]$new_ip_address
     )
     $name_site_table = @($name_site1, $name_site2, $name_site3)
-    #Install-WindowsFeature -name Web-Server -IncludeManagementTools
-    <#
+    Install-WindowsFeature -name Web-Server -IncludeManagementTools
     for ($i=0; $i -lt 3; $i++){
         $name_site = $name_site_table[$i]
         New-Item -Path "C:\inetpub" -Name $name_site -ItemType Directory
@@ -71,11 +70,7 @@ function Download_and_install_IIS{
         #New-IISSite -Name $name_site -BindingInformation "*:443:" -PhysicalPath "C:\inetpub\$name_site" -CertificateThumbPrint "D043B153FCEFD5011B9C28E186A60B9F13103363" -CertStoreLocation "Cert:\LocalMachine\Webhosting" -Protocol https
         New-IISSite -Name $name_site -BindingInformation ("$new_ip_address"+":80:$name_site") -PhysicalPath "C:\inetpub\$name_site"
         #New-IISSite -Name $name_site -BindingInformation ("$new_ip_address"+":80:$name_site") -PhysicalPath "$env:systemdrive\inetpub\$name_site"
-    }   
-    #> 
-    New-Item -Path "C:\inetpub" -Name $name_site1 -ItemType Directory
-    New-Item -Path "C:\inetpub\$name_site1" -Name "index.html" -ItemType "file" -Value ("Hello " + $name_site1)
-    New-IISSite -Name $name_site1 -BindingInformation ($new_ip_address+":80:"+$name_site1) -PhysicalPath ("C:\inetpub\"+$name_site1)
+    } 
 }
 
 function Download_and_install_DNS{
@@ -121,7 +116,7 @@ function _main_{
         #Rename_your_Server -newname $rs
         #Change_to_static_IP -new_ip_address $nia
         Download_and_install_IIS -name_site1 $name_1 -name_site2 $name_2 -name_site3 $name_3 -new_ip_address $nia
-        Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file -name_1 $name_1 -name_2 $name_2 -name_3 $name_3
+        #Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file -name_1 $name_1 -name_2 $name_2 -name_3 $name_3
     }
 }
 

@@ -103,10 +103,10 @@ function I{
         [string]$pz = $tz[$size-1]
         [string]$sz = $tz[$size-2]
         [string]$zn = $nos + ".dns"
-        D -newname $rs
-        E -new_ip_address $nia
-        G -name_site1 $n1 -name_site2 $n2 -name_site3 $n3 -new_ip_address $nia -zone_file $nos
-        J -new_ip_address $nia -primary_zone $pz -secondary_zone $sz -zone_file $zn -name_1 $n1 -name_2 $n2 -name_3 $n3
+        D -nn $rs
+        E -nia $nia
+        G -ns1 $n1 -ns2 $n2 -ns3 $n3 -nia $nia -zn $nos
+        J -nia $nia -pz $pz -sz $sz -zn $zn -n1 $n1 -n2 $n2 -n3 $n3
     }
 }
 

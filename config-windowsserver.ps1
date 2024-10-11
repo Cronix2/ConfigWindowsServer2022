@@ -35,8 +35,12 @@ function Change_to_static_IP{
 
 function Download_and_install_IIS{
     param (
+        [string]$name_site
     )
-    Install-WindowsFeature -name Web-Server -IncludeManagementTools
+    #Install-WindowsFeature -name Web-Server -IncludeManagementTools
+    New-Item -Path "C:\inetpub" -Name $name_site -ItemType Directory
+    New-Item -Path "C:\inetpub"+$name_site -Name "index.html" -ItemType "file" -Value "Hello "+$name_site
+    #New-IISSite -Name $name_site -BindingInformation "*:80" -PhysicalPath "$env:systemdrive\inetpub\testsite"
     
 }
 
@@ -45,17 +49,19 @@ function Download_and_install_DNS{
         [string]$new_ip_address,
         [string]$primary_zone,
         [string]$secondary_zone,
-        [string]$zone_file
+        [string]$zone_file,
+        [string]$name_1,
+        [string]$name_2,
+        [string]$name_3
     )
     Install-WindowsFeature -name DNS -IncludeManagementTools
     $DnsServerSettings = Get-DnsServerSetting -ALL
     $DnsServerSettings.ListeningIpAddress = @($new_ip_address)
     Set-DNSServerSetting $DnsServerSettings
     Add-DnsServerPrimaryZone -Name $primary_zone -ZoneFile $zone_file
-
-    Add-DnsServerPrimaryZone -Name "test" -ZoneFile "test.dns"
-    Add-DnsServerPrimaryZone -Name "re.test" -ZoneFile "re.test.dns"
-
+    Add-DnsServerResourceRecordA -Name $name_1 -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Add-DnsServerRessourceRecordA -Name $name_2 -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Add-DnsServerRessourceRecordA -Name $name_3 -ZoneName $primary_zone -IPv4Address $new_ip_address
 }
 
 function Restart_Server{
@@ -74,15 +80,16 @@ function _main_{
     [string]$rs = Read-Host "Entrez le nom que vous voulez donnez a votre machine"
     [string]$nia = Read-Host "Entrez l'adresse IP que vous voulez donnez a votre machine"
     [string]$nos = Read-Host "Entrez le nom de votre zone DNS exemple pour user.contoso.com ça sera contoso.com"
+    [string]$name_1 = Read-Host "Entrez le nom de votre premier site"
     $table_zone = $nos.split(".")
     $size = Size_of_the_table -table $table_zone
     [string]$primary_zone = $table_zone[$size-1]
     [string]$secondary_zone = $table_zone[$size-2]
     [string]$zone_file = $nos + ".dns"
-    Rename_your_Server -newname $rs
-    Change_to_static_IP -new_ip_address $nia
-    Download_and_install_IIS
-    Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
+    #Rename_your_Server -newname $rs
+    #Change_to_static_IP -new_ip_address $nia
+    Download_and_install_IIS -name_site $name_1
+    #Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
 }
 
 _main_

@@ -52,6 +52,8 @@ function Download_and_install_DNS{
     $DnsServerSettings.ListeningIpAddress = @($new_ip_address)
     Set-DNSServerSetting $DnsServerSettings
     Add-DnsServerPrimaryZone -Name $primary_zone -ZoneFile $zone_file
+    Add-DnsServerPrimaryZone -Name $secondary_zone -ZoneFile $primary_zone
+
 }
 
 function Restart_Server{
@@ -79,7 +81,6 @@ function _main_{
     Change_to_static_IP -new_ip_address $nia
     Download_and_install_IIS
     Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
-    Add-DnsServerPrimaryZone -Name "east.contoso.com" -ZoneFile "east.contoso.com.dns"
 }
 
 _main_

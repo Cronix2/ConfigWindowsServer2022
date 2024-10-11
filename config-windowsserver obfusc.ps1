@@ -1,35 +1,31 @@
-#Use this fonction to know if your are administrator on your computer, it's a boolean exit
 function A{
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
 }
 
-#Use this fonction to rename your computer
 function B{
     param (
-        [string] $newname
+        [string] $nn
     )
-    Rename-Computer -NewName "$newname" #-Restart
+    Rename-Computer -NewName "$nn" #-Restart
 }
 
-#Use this function to change your adress IP 
 function C{
     param(
-        [string]$new_ip_address
+        [string]$niaf
     )
     if ((Get-NetAdapter | Measure-Object).count -lt 2){
-        Write-Host "vous n'avez pas assez d'interface reseau, par consequent nous n'avons pas change votre addresse IP"
+        Write-Host "nope"
     }
     else{
-        $new_default_gateway = $new_ip_address.split(".")
-        $new_default_gateway[3]=1
-        $new_default_gateway = [system.String]::Join(".", $new_default_gateway)
-        $index_interface = (Get-NetAdapter | Select-Object -First 1).ifIndex
+        $ndg = $niaf.split(".")
+        $ndg[3]=1
+        $ndg = [system.String]::Join(".", $ndg)
+        $iif = (Get-NetAdapter | Select-Object -First 1).ifIndex
 
-        #Write-Host "$new_default_gateway `n$new_ip_address"
-        Remove-NetIPAddress -InterfaceIndex $index_interface -Confirm:$false
-        Remove-NetRoute -InterfaceIndex $index_interface -Confirm:$false
-        New-NetIPAddress -InterfaceIndex $index_interface -IPAddress $new_ip_address -PrefixLength 24 -DefaultGateway $new_default_gateway
-        Set-DnsClientServerAddress -InterfaceIndex $index_interface -ServerAddresses ($new_ip_address,"8.8.8.8")
+        Remove-NetIPAddress -InterfaceIndex $iif -Confirm:$false
+        Remove-NetRoute -InterfaceIndex $iif -Confirm:$false
+        New-NetIPAddress -InterfaceIndex $iif -IPAddress $niaf -PrefixLength 24 -DefaultGateway $ndg
+        Set-DnsClientServerAddress -InterfaceIndex $iif -ServerAddresses ($niaf,"8.8.8.8")
     }
 }
 
@@ -40,45 +36,45 @@ function D{
     
 }
 
-function Download_and_install_DNS{
+function E{
     param (
-        [string]$new_ip_address,
-        [string]$primary_zone,
-        [string]$secondary_zone,
-        [string]$zone_file
+        [string]$niaf,
+        [string]$pz,
+        [string]$sz,
+        [string]$zf
     )
     Install-WindowsFeature -name DNS -IncludeManagementTools
-    $DnsServerSettings = Get-DnsServerSetting -ALL
-    $DnsServerSettings.ListeningIpAddress = @($new_ip_address)
-    Set-DNSServerSetting $DnsServerSettings
-    Add-DnsServerPrimaryZone -Name $primary_zone -ZoneFile $zone_file
+    $dss = Get-DnsServerSetting -ALL
+    $dss.ListeningIpAddress = @($niaf)
+    Set-DNSServerSetting $dss
+    Add-DnsServerPrimaryZone -Name $pz -ZoneFile $zf
 }
 
-function Restart_Server{
+function F{
     Restart-Computer -Force
 }
 
-function Size_of_the_table{
+function G{
     param(
-        [array]$table
+        [array]$t
     )
-    $table.length
+    $t.length
 }
 
 # ____________________________________________________
 function _main_{
-    [string]$rs = Read-Host "Entrez le nom que vous voulez donnez a votre machine"
-    [string]$nia = Read-Host "Entrez l'adresse IP que vous voulez donnez a votre machine"
-    [string]$nos = Read-Host "Entrez le nom de votre zone DNS exemple pour user.contoso.com ça sera contoso.com"
-    $table_zone = $nos.split(".")
-    $size = Size_of_the_table -table $table_zone
-    [string]$primary_zone = $table_zone[$size-1]
-    [string]$secondary_zone = $table_zone[$size-2]
-    [string]$zone_file = $nos + ".dns"
-    B -newname $rs
-    C -new_ip_address $nia
+    [string]$rs = Read-Host "rs"
+    [string]$nia = Read-Host "nia"
+    [string]$nos = Read-Host "nos"
+    $tz = $nos.split(".")
+    $s = G -t $tz
+    [string]$pz = $tz[$s-1]
+    [string]$sz = $tz[$s-2]
+    [string]$zf = $nos + ".dns"
+    B -nn $rs
+    C -niaf $nia
     D
-    Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
+    E -niaf $nia -pz $pz -sz $sz -zf $zf
 }
 
 _main_

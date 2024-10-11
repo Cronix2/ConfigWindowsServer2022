@@ -58,7 +58,8 @@ function Download_and_install_IIS{
     param (
         [string]$name_site1,
         [string]$name_site2,
-        [string]$name_site3
+        [string]$name_site3,
+        [string]$new_ip_address
     )
     $name_site_table = @($name_site1, $name_site2, $name_site3)
     Install-WindowsFeature -name Web-Server -IncludeManagementTools
@@ -66,7 +67,8 @@ function Download_and_install_IIS{
         $name_site = $name_site_table[$i]
         New-Item -Path "C:\inetpub" -Name $name_site -ItemType Directory
         New-Item -Path "C:\inetpub\$name_site" -Name "index.html" -ItemType "file" -Value ("Hello " + $name_site)
-        New-IISSite -Name $name_site -BindingInformation "*:80" -PhysicalPath "C:\inetpub\$name_site" -Protocol http
+        #New-IISSite -Name $name_site -BindingInformation "*:443:" -PhysicalPath "C:\inetpub\$name_site" -CertificateThumbPrint "D043B153FCEFD5011B9C28E186A60B9F13103363" -CertStoreLocation "Cert:\LocalMachine\Webhosting" -Protocol https
+        New-IISSite -Name $name_site -BindingInformation ("$new_ip_address"+":80:$name_site") -PhysicalPath "C:\inetpub\$name_site"
     }    
 }
 
@@ -112,8 +114,8 @@ function _main_{
         [string]$zone_file = $nos + ".dns"
         #Rename_your_Server -newname $rs
         #Change_to_static_IP -new_ip_address $nia
-        #Download_and_install_IIS -name_site1 $name_1 -name_site2 $name_2 -name_site3 $name_3
-        #Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
+        Download_and_install_IIS -name_site1 $name_1 -name_site2 $name_2 -name_site3 $name_3
+        Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
     }
 }
 

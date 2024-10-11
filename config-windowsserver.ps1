@@ -1,12 +1,17 @@
+#Basic functions
+#_______________________________________________________________________________________
+
 #Use this fonction to know if your are administrator on your computer, it's a boolean exit
 function AsAdministrator {
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
 }
 
+#Use this function to restart your server
 function Restart_Server{
     Restart-Computer -Force
 }
 
+#Use this function to know the size of a table
 function Size_of_the_table{
     param(
         [array]$table
@@ -14,7 +19,9 @@ function Size_of_the_table{
     $table.length
 }
 
-#_____________________________
+
+#Advanced functions for the configuration of your server
+#_______________________________________________________________________________________
 
 #Use this fonction to rename your computer
 function Rename_your_Server{
@@ -46,6 +53,7 @@ function Change_to_static_IP{
     }
 }
 
+#Use this function to create a SSL certificate ## Not Used
 function Create_a_SSL_certificate{
     param (
         [string]$name_site
@@ -54,6 +62,7 @@ function Create_a_SSL_certificate{
     Export-Certificate -Cert $cert -FilePath "C:\Users\admin\Desktop\$namesite.cer"
 }
 
+#Use this function to download, install and configure IIS
 function Download_and_install_IIS{
     param (
         [string]$name_site1,
@@ -74,6 +83,7 @@ function Download_and_install_IIS{
     } 
 }
 
+#Use this function to download, install and configure DNS
 function Download_and_install_DNS{
     param (
         [string]$new_ip_address,
@@ -96,7 +106,7 @@ function Download_and_install_DNS{
 }
 
 
-
+#Main function
 # ____________________________________________________
 function _main_{
     $admin = AsAdministrator
@@ -115,10 +125,11 @@ function _main_{
         [string]$primary_zone = $table_zone[$size-1]
         [string]$secondary_zone = $table_zone[$size-2]
         [string]$zone_file = $nos + ".dns"
-        #Rename_your_Server -newname $rs
-        #Change_to_static_IP -new_ip_address $nia
+        Rename_your_Server -newname $rs
+        Change_to_static_IP -new_ip_address $nia
         Download_and_install_IIS -name_site1 $name_1 -name_site2 $name_2 -name_site3 $name_3 -new_ip_address $nia -zone_file $nos
         Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file -name_1 $name_1 -name_2 $name_2 -name_3 $name_3
+        Restart_Server
     }
 }
 

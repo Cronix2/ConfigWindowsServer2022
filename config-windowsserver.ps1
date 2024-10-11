@@ -52,7 +52,7 @@ function Download_and_install_DNS{
     $DnsServerSettings.ListeningIpAddress = @($new_ip_address)
     Set-DNSServerSetting $DnsServerSettings
     Add-DnsServerPrimaryZone -Name $primary_zone -ZoneFile $zone_file
-    Add-DnsServerPrimaryZone -Name $secondary_zone -ZoneFile $primary_zone
+    Add-DnsServerZoneDelegation -Name $secondary_zone -ZoneName $primary_zone -NameServer "ns1."+$primary_zone+"."+$secondary_zone -IPAddress "10.10.10.101"
 
 }
 

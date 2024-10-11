@@ -1,7 +1,20 @@
 #Use this fonction to know if your are administrator on your computer, it's a boolean exit
-function AsAdministrator{
+function AsAdministrator {
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
 }
+
+function Restart_Server{
+    Restart-Computer -Force
+}
+
+function Size_of_the_table{
+    param(
+        [array]$table
+    )
+    $table.length
+}
+
+#_____________________________
 
 #Use this fonction to rename your computer
 function Rename_your_Server{
@@ -33,6 +46,14 @@ function Change_to_static_IP{
     }
 }
 
+function Create_a_SSL_certificate{
+    param (
+        [string]$name_site
+    )
+    $cert = New-SelfSignedCertificate -Subject "CN=$name_site" -CertStoreLocation "Cert:\CurrentUser\My" -KeyExportPolicy Exportable -KeySpec Signature -KeyLength 2048 -KeyAlgorithm RSA -HashAlgorithm SHA256
+    Export-Certificate -Cert $cert -FilePath "C:\Users\admin\Desktop\$namesite.cer"
+}
+
 function Download_and_install_IIS{
     param (
         [string]$name_site1,
@@ -43,9 +64,9 @@ function Download_and_install_IIS{
     Install-WindowsFeature -name Web-Server -IncludeManagementTools
     for ($i=0; $i -lt 3; $i++){
         $name_site = $name_site_table[$i]
-        New-Item -Path "C:\" -Name $name_site -ItemType Directory
-        New-Item -Path ("C:\"+"$name_site") -Name "index.html" -ItemType "file" -Value ("Hello " + $name_site)
-        New-IISSite -Name $name_site -BindingInformation "*:80" -PhysicalPath "$env:systemdrive\inetpub\testsite"
+        New-Item -Path "C:\inetpub" -Name $name_site -ItemType Directory
+        New-Item -Path "C:\inetpub\$name_site" -Name "index.html" -ItemType "file" -Value ("Hello " + $name_site)
+        New-IISSite -Name $name_site -BindingInformation "*:80" -PhysicalPath "C:\inetpub\$name_site" -Protocol http
     }    
 }
 
@@ -69,34 +90,31 @@ function Download_and_install_DNS{
     Add-DnsServerRessourceRecordA -Name $name_3 -ZoneName $primary_zone -IPv4Address $new_ip_address
 }
 
-function Restart_Server{
-    Restart-Computer -Force
-}
 
-function Size_of_the_table{
-    param(
-        [array]$table
-    )
-    $table.length
-}
 
 # ____________________________________________________
 function _main_{
-    [string]$rs = Read-Host "Entrez le nom que vous voulez donnez a votre machine"
-    [string]$nia = Read-Host "Entrez l'adresse IP que vous voulez donnez a votre machine"
-    [string]$nos = Read-Host "Entrez le nom de votre zone DNS exemple pour user.contoso.com ça sera contoso.com"
-    [string]$name_1 = Read-Host "Entrez le nom de votre premier site"
-    [string]$name_2 = Read-Host "Entrez le nom de votre deuxieme site"
-    [string]$name_3 = Read-Host "Entrez le nom de votre troisieme site"
-    $table_zone = $nos.split(".")
-    $size = Size_of_the_table -table $table_zone
-    [string]$primary_zone = $table_zone[$size-1]
-    [string]$secondary_zone = $table_zone[$size-2]
-    [string]$zone_file = $nos + ".dns"
-    #Rename_your_Server -newname $rs
-    #Change_to_static_IP -new_ip_address $nia
-    Download_and_install_IIS -name_site1 $name_1 -name_site2 $name_2 -name_site3 $name_3
-    #Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
+    $admin = AsAdministrator
+    if ($admin -eq $true){
+        Write-Host "Vous n'etes pas administrateur, veuillez relancer le script en tant qu'administrateur"
+        exit
+    }else{
+        [string]$rs = Read-Host "Entrez le nom que vous voulez donnez a votre machine"
+        [string]$nia = Read-Host "Entrez l'adresse IP que vous voulez donnez a votre machine"
+        [string]$nos = Read-Host "Entrez le nom de votre zone DNS exemple pour user.contoso.com ça sera contoso.com"
+        [string]$name_1 = Read-Host "Entrez le nom de votre premier site"
+        [string]$name_2 = Read-Host "Entrez le nom de votre deuxieme site"
+        [string]$name_3 = Read-Host "Entrez le nom de votre troisieme site"
+        $table_zone = $nos.split(".")
+        $size = Size_of_the_table -table $table_zone
+        [string]$primary_zone = $table_zone[$size-1]
+        [string]$secondary_zone = $table_zone[$size-2]
+        [string]$zone_file = $nos + ".dns"
+        #Rename_your_Server -newname $rs
+        #Change_to_static_IP -new_ip_address $nia
+        #Download_and_install_IIS -name_site1 $name_1 -name_site2 $name_2 -name_site3 $name_3
+        #Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
+    }
 }
 
 _main_

@@ -35,13 +35,18 @@ function Change_to_static_IP{
 
 function Download_and_install_IIS{
     param (
-        [string]$name_site
+        [string]$name_site1,
+        [string]$name_site2,
+        [string]$name_site3
     )
-    #Install-WindowsFeature -name Web-Server -IncludeManagementTools
-    New-Item -Path "C:\inetpub" -Name $name_site -ItemType Directory
-    New-Item -Path "C:\inetpub"+"$name_site" -Name "index.html" -ItemType "file" -Value "Hello "+"$name_site"
-    #New-IISSite -Name $name_site -BindingInformation "*:80" -PhysicalPath "$env:systemdrive\inetpub\testsite"
-    
+    $name_site_table = @($name_site1, $name_site2, $name_site3)
+    Install-WindowsFeature -name Web-Server -IncludeManagementTools
+    for ($i=0; $i -lt 3; $i++){
+        $name_site = $name_site_table[$i]
+        New-Item -Path "C:\" -Name $name_site -ItemType Directory
+        New-Item -Path ("C:\"+"$name_site") -Name "index.html" -ItemType "file" -Value ("Hello " + $name_site)
+        New-IISSite -Name $name_site -BindingInformation "*:80" -PhysicalPath "$env:systemdrive\inetpub\testsite"
+    }    
 }
 
 function Download_and_install_DNS{
@@ -81,6 +86,8 @@ function _main_{
     [string]$nia = Read-Host "Entrez l'adresse IP que vous voulez donnez a votre machine"
     [string]$nos = Read-Host "Entrez le nom de votre zone DNS exemple pour user.contoso.com ça sera contoso.com"
     [string]$name_1 = Read-Host "Entrez le nom de votre premier site"
+    [string]$name_2 = Read-Host "Entrez le nom de votre deuxieme site"
+    [string]$name_3 = Read-Host "Entrez le nom de votre troisieme site"
     $table_zone = $nos.split(".")
     $size = Size_of_the_table -table $table_zone
     [string]$primary_zone = $table_zone[$size-1]
@@ -88,7 +95,7 @@ function _main_{
     [string]$zone_file = $nos + ".dns"
     #Rename_your_Server -newname $rs
     #Change_to_static_IP -new_ip_address $nia
-    Download_and_install_IIS -name_site $name_1
+    Download_and_install_IIS -name_site1 $name_1 -name_site2 $name_2 -name_site3 $name_3
     #Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
 }
 

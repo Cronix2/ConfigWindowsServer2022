@@ -1,10 +1,10 @@
 #Use this fonction to know if your are administrator on your computer, it's a boolean exit
-function AsAdministrator{
+function A{
     ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
 }
 
 #Use this fonction to rename your computer
-function Rename_your_Server{
+function B{
     param (
         [string] $newname
     )
@@ -12,7 +12,7 @@ function Rename_your_Server{
 }
 
 #Use this function to change your adress IP 
-function Change_to_static_IP{
+function C{
     param(
         [string]$new_ip_address
     )
@@ -33,7 +33,7 @@ function Change_to_static_IP{
     }
 }
 
-function Download_and_install_IIS{
+function D{
     param (
     )
     Install-WindowsFeature -name Web-Server -IncludeManagementTools
@@ -75,11 +75,10 @@ function _main_{
     [string]$primary_zone = $table_zone[$size-1]
     [string]$secondary_zone = $table_zone[$size-2]
     [string]$zone_file = $nos + ".dns"
-    Rename_your_Server -newname $rs
-    Change_to_static_IP -new_ip_address $nia
-    Download_and_install_IIS
+    B -newname $rs
+    C -new_ip_address $nia
+    D
     Download_and_install_DNS -new_ip_address $nia -primary_zone $primary_zone -secondary_zone $secondary_zone -zone_file $zone_file
-    Add-DnsServerPrimaryZone -Name "east.contoso.com" -ZoneFile "east.contoso.com.dns"
 }
 
 _main_

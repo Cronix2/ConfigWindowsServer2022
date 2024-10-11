@@ -39,7 +39,7 @@ function Download_and_install_IIS{
     )
     #Install-WindowsFeature -name Web-Server -IncludeManagementTools
     New-Item -Path "C:\inetpub" -Name $name_site -ItemType Directory
-    New-Item -Path "C:\inetpub"+$name_site -Name "index.html" -ItemType "file" -Value "Hello "+$name_site
+    New-Item -Path "C:\inetpub"+"$name_site" -Name "index.html" -ItemType "file" -Value "Hello "+"$name_site"
     #New-IISSite -Name $name_site -BindingInformation "*:80" -PhysicalPath "$env:systemdrive\inetpub\testsite"
     
 }

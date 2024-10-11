@@ -88,9 +88,9 @@ function Download_and_install_DNS{
     $DnsServerSettings.ListeningIpAddress = @($new_ip_address)
     Set-DNSServerSetting $DnsServerSettings
     Add-DnsServerPrimaryZone -Name $primary_zone -ZoneFile $zone_file
-    Add-DnsServerResourceRecord -Name $name_1 -A -ZoneName $primary_zone -IPv4Address $new_ip_address
-    Add-DnsServerResourceRecord -Name $name_2 -A -ZoneName $primary_zone -IPv4Address $new_ip_address
-    Add-DnsServerResourceRecord -Name $name_3 -A -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Add-DnsServerResourceRecord -Name ($name_1+"."+$secondary_zone) -A -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Add-DnsServerResourceRecord -Name ($name_2+"."+$secondary_zone) -A -ZoneName $primary_zone -IPv4Address $new_ip_address
+    Add-DnsServerResourceRecord -Name ($name_3+"."+$secondary_zone) -A -ZoneName $primary_zone -IPv4Address $new_ip_address
 }
 
 
